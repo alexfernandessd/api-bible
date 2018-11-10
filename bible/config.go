@@ -14,11 +14,11 @@ type Config struct {
 	ProfileCreds string `envconfig:"" default:"personal"`
 
 	AWSRegion   string `envconfig:"BIBLE_AWS_REGION" default:"us-east-2"`
-	AWSInstance string `envconfig:"BIBLE_AWS_INSTANCE" default:"bible"`
-	AWSUser     string `envconfig:"BIBLE_AWS_DB_USER" default:"bible"`
-	AWSPassword string `envconfig:"BIBLE_AWS_DB_PASSWORD" default:"psdbible"`
+	AWSInstance string `envconfig:"BIBLE_AWS_INSTANCE"`
+	AWSUser     string `envconfig:"BIBLE_AWS_DB_USER"`
+	AWSPassword string `envconfig:"BIBLE_AWS_DB_PASSWORD"`
 
-	MySqlbEndpoint string `envconfig:"BIBLE_AWS_DB_ENDPOINT" default:"bible.cgrmdcvj2f27.us-east-2.rds.amazonaws.com"`
+	MySqlbEndpoint string `envconfig:"BIBLE_AWS_DB_ENDPOINT"`
 }
 
 //NewConfig config constructor

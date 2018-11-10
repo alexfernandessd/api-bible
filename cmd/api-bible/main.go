@@ -1,36 +1,31 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
+	"log"
 
 	bible "github.com/alexfernandessd/api-bible/bible"
-	"github.com/aws/aws-sdk-go/aws/credentials"
-	"github.com/aws/aws-sdk-go/service/rds/rdsutils"
 	_ "github.com/go-sql-driver/mysql"
 )
 
 func main() {
 	config := bible.NewConfig()
 
-	// sess, err := session.NewSession(&aws.Config{
-	// 	Region:      aws.String("region"),
-	// 	Credentials: credentials.NewSharedCredentials("/home/user/.aws/credentials", "personal"),
-	// })
+	dbConn, dbErr := bible.NewConnectionMySQL(config)
 
-	awsCreds := NewSharedCredentials(config.FileCreds, config.ProfileCreds)
+	if dbErr != nil {
+		log.Fatal("fail to connect with instance rds", dbErr)
+	}
 
-	_, err := rdsutils.BuildAuthToken(config.MySqlbEndpoint, config.AWSRegion, config.AWSUser, awsCreds)
-	fmt.Println("config", config.AWSUser)
+	connErr := dbConn.Ping()
 
-	dnsStr := fmt.Sprintf("%s:%s@tcp(%s)/%s?tls=false",
-		"bible", config.AWSPassword, "bible.cgrmdcvj2f27.us-east-2.rds.amazonaws.com", "bible",
-	)
-	fmt.Println("dns", dnsStr)
+	if connErr != nil {
+		log.Fatal("failed to connect on database: ", connErr)
+	}
 
-	db, _ := sql.Open("mysql", dnsStr)
+	// Read to start de application
 
-	rows, err := db.Query("SELECT * FROM verses where id = 4000")
+	rows, err := dbConn.Query("SELECT * FROM verses where id = 4000")
 
 	for rows.Next() {
 		var id int
@@ -48,11 +43,4 @@ func main() {
 	if err != nil {
 		fmt.Println("error: ", err)
 	}
-}
-
-func NewSharedCredentials(filename, profile string) *credentials.Credentials {
-	return credentials.NewCredentials(&credentials.SharedCredentialsProvider{
-		Filename: filename,
-		Profile:  profile,
-	})
 }
