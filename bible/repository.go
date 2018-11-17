@@ -18,6 +18,5 @@ func NewRepository(db Database) *RepositoryImpl {
 func (r RepositoryImpl) getVerse(book, chapterID, verseID string) (Verse, error) {
 	var verse Verse
 	err := r.db.getVerse(book, chapterID, verseID, &verse)
-
 	return verse, err
 }

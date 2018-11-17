@@ -12,5 +12,6 @@ func NewService(repository Repository) *Service {
 
 // GetVerse get one verse by book, chapter and verse
 func (s Service) GetVerse(book, chapterID, verseID string) (Verse, error) {
-	return s.repository.getVerse(book, chapterID, verseID)
+	verse, err := s.repository.getVerse(book, chapterID, verseID)
+	return verse, err
 }

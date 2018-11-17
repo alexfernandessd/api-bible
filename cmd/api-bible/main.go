@@ -18,19 +18,18 @@ func main() {
 		log.Fatal("fail to connect with instance rds", dbErr)
 	}
 
-	// Read to start de application
-
 	repository := bible.NewRepository(dbConn)
 	service := bible.NewService(repository)
 	handler := createServerHandler(service)
 
+	fmt.Printf("Starting %s on port %d ...", config.APP, config.Port)
 	err := gracehttp.Serve(&http.Server{
 		Addr:    fmt.Sprintf(":%d", config.Port),
 		Handler: handler,
 	})
 
 	if err != nil {
-		log.Fatal("Failed to create server handler", err)
+		log.Fatal("Failed to start de application", err)
 	}
 
 }

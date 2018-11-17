@@ -4,8 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-
-	_ "github.com/go-sql-driver/mysql"
 )
 
 // Database map methods from database
@@ -13,6 +11,7 @@ type Database interface {
 	getVerse(bookID, chapterID, verseID string, verse *Verse) error
 }
 
+// MySQLDatabase contains a conection with SQL
 type MySQLDatabase struct {
 	db *sql.DB
 }
@@ -37,12 +36,14 @@ func (m MySQLDatabase) getVerse(book, chapterID, verseID string, verse *Verse) e
 	bookID, err := m.getBookByID(book)
 
 	rows, err := m.db.Query("SELECT * FROM verses where book = ? and chapter = ? and verse = ?", bookID, chapterID, verseID)
+	if err != nil {
+		fmt.Println("error: ", err)
+		return err
+	}
 
 	for rows.Next() {
 		err = rows.Scan(&verse.ID, &verse.Version, &verse.Testament, &verse.Book, &verse.Chapter, &verse.Verse, &verse.Text)
-		// fmt.Printf("%s %d.%d: %s", book, verse.Chapter, verse.Verse, verse.Text)
 	}
-
 	if err != nil {
 		fmt.Println("error: ", err)
 	}

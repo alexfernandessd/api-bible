@@ -1,5 +1,6 @@
 package bible
 
+// Verse contains elements from a verse
 type Verse struct {
 	ID        int
 	Version   string
