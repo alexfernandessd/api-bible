@@ -22,6 +22,9 @@ BIN_WEBSERVER := api-bible
 CREATE_LOCAL_ENV := $(shell if [ ! -f "$(ROOT_DIR)/.env" ]; then cp $(ROOT_DIR)/.env.example $(ROOT_DIR)/.env; fi)
 LOCAL_VARIABLES ?= $(shell for i in $(shell cat $(ROOT_DIR)/.env); do echo -n "$$i "; done)
 
+## build-run
+build-run: build run
+
 ## run: run
 run:
 	@echo $(ECHOFLAGS) "$(OK_COLOR)==> Running webserver with envs:[$(LOCAL_VARIABLES)]...$(NO_COLOR)"

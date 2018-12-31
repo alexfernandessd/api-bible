@@ -27,8 +27,19 @@ func getChapterByBook(svc *bible.Service) http.HandlerFunc {
 // getVersesByChapte
 func getVersesByChapter(svc *bible.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		book := chi.URLParam(r, urlParamBook)
+		if book == "" {
+			fmt.Println("erro", book)
+		}
 
-		// json.NewEncoder(w).Encode()
+		chapterID := chi.URLParam(r, urlParamChapterID)
+		if chapterID == "" {
+			fmt.Println("erro", chapterID)
+		}
+
+		verses, _ := svc.GetVerses(book, chapterID)
+
+		json.NewEncoder(w).Encode(verses)
 	}
 }
 

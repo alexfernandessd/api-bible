@@ -9,6 +9,7 @@ import (
 // Database map methods from database
 type Database interface {
 	getVerse(bookID, chapterID, verseID string, verse *Verse) error
+	getVerses(bookID, chapterID string, verse *Verse) error
 }
 
 // MySQLDatabase contains a conection with SQL
@@ -18,11 +19,13 @@ type MySQLDatabase struct {
 
 // NewConnectionMySQL create a connection with a rds
 func NewConnectionMySQL(config *Config) (*MySQLDatabase, error) {
-	dnsStr := fmt.Sprintf("%s:%s@tcp(%s)/%s?tls=false",
-		config.AWSUser, config.AWSPassword, config.MySqlbEndpoint, config.AWSInstance,
-	)
+	// Connection with AWS
+	// dnsStr := fmt.Sprintf("%s:%s@tcp(%s)/%s?tls=false",
+	// config.AWSUser, config.AWSPassword, config.MySqlbEndpoint, config.AWSInstance,
+	// )
+	// dbConn, err := sql.Open("mysql", dnsStr)
 
-	dbConn, err := sql.Open("mysql", dnsStr)
+	dbConn, err := sql.Open("mysql", "user:password@/databse")
 
 	connErr := dbConn.Ping()
 	if connErr != nil {
@@ -44,6 +47,31 @@ func (m MySQLDatabase) getVerse(book, chapterID, verseID string, verse *Verse) e
 	for rows.Next() {
 		err = rows.Scan(&verse.ID, &verse.Version, &verse.Testament, &verse.Book, &verse.Chapter, &verse.Verse, &verse.Text)
 	}
+	if err != nil {
+		fmt.Println("error: ", err)
+	}
+
+	return err
+}
+
+func (m MySQLDatabase) getVerses(book, chapterID string, verse *Verse) error {
+	bookID, err := m.getBookByID(book)
+	// var chapter Chapter
+	verses := make([]Verse, 0)
+
+	rows, err := m.db.Query("SELECT * FROM verses where book = ? and chapter = ?", bookID, chapterID)
+	if err != nil {
+		fmt.Println("error: ", err)
+		return err
+	}
+
+	for rows.Next() {
+		err = rows.Scan(&verse.ID, &verse.Version, &verse.Testament, &verse.Book, &verse.Chapter, &verse.Verse, &verse.Text)
+		verses = append(verses, *verse)
+	}
+
+	_ = &Chapter{Verses: verses}
+
 	if err != nil {
 		fmt.Println("error: ", err)
 	}
