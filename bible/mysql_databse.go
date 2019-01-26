@@ -20,12 +20,10 @@ type MySQLDatabase struct {
 // NewConnectionMySQL create a connection with a rds
 func NewConnectionMySQL(config *Config) (*MySQLDatabase, error) {
 	// Connection with AWS
-	// dnsStr := fmt.Sprintf("%s:%s@tcp(%s)/%s?tls=false",
-	// config.AWSUser, config.AWSPassword, config.MySqlbEndpoint, config.AWSInstance,
-	// )
-	// dbConn, err := sql.Open("mysql", dnsStr)
-
-	dbConn, err := sql.Open("mysql", "user:password@/databse")
+	dnsStr := fmt.Sprintf("%s:%s@tcp(%s)/%s?tls=false",
+		config.AWSUser, config.AWSPassword, config.MySqlbEndpoint, config.AWSInstance,
+	)
+	dbConn, err := sql.Open("mysql", dnsStr)
 
 	connErr := dbConn.Ping()
 	if connErr != nil {
