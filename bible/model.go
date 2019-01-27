@@ -10,7 +10,3 @@ type Verse struct {
 	Verse     int
 	Text      string
 }
-
-type Chapter struct {
-	Verses []Verse
-}

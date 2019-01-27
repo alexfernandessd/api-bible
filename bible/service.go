@@ -18,8 +18,8 @@ func (s Service) GetVerse(book, chapterID, verseID string) (Verse, error) {
 }
 
 // GetVerses get all verses by book and chapter
-func (s Service) GetVerses(book, chapterID string) (Verse, error) {
-	var verse Verse
-	err := s.database.getVerses(book, chapterID, &verse)
-	return verse, err
+func (s Service) GetVerses(book, chapterID string) ([]Verse, error) {
+	var verses []Verse
+	err := s.database.getVerses(book, chapterID, &verses)
+	return verses, err
 }

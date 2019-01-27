@@ -9,7 +9,7 @@ import (
 // Database map methods from database
 type Database interface {
 	getVerse(bookID, chapterID, verseID string, verse *Verse) error
-	getVerses(bookID, chapterID string, verse *Verse) error
+	getVerses(bookID, chapterID string, verses *[]Verse) error
 }
 
 // MySQLDatabase contains a conection with SQL
@@ -52,10 +52,8 @@ func (m MySQLDatabase) getVerse(book, chapterID, verseID string, verse *Verse) e
 	return err
 }
 
-func (m MySQLDatabase) getVerses(book, chapterID string, verse *Verse) error {
+func (m MySQLDatabase) getVerses(book, chapterID string, verses *[]Verse) error {
 	bookID, err := m.getBookByID(book)
-	// var chapter Chapter
-	verses := make([]Verse, 0)
 
 	rows, err := m.db.Query("SELECT * FROM verses where book = ? and chapter = ?", bookID, chapterID)
 	if err != nil {
@@ -63,18 +61,27 @@ func (m MySQLDatabase) getVerses(book, chapterID string, verse *Verse) error {
 		return err
 	}
 
-	for rows.Next() {
-		err = rows.Scan(&verse.ID, &verse.Version, &verse.Testament, &verse.Book, &verse.Chapter, &verse.Verse, &verse.Text)
-		verses = append(verses, *verse)
-	}
+	var verse Verse
 
-	_ = &Chapter{Verses: verses}
+	for rows.Next() {
+		err = rows.Scan(
+			&verse.ID,
+			&verse.Version,
+			&verse.Testament,
+			&verse.Book,
+			&verse.Chapter,
+			&verse.Verse,
+			&verse.Text,
+		)
+		*verses = append(*verses, verse)
+	}
 
 	if err != nil {
 		fmt.Println("error: ", err)
+		return err
 	}
 
-	return err
+	return nil
 }
 
 func (m MySQLDatabase) getBookByID(book string) (int, error) {
