@@ -10,14 +10,14 @@ import (
 )
 
 // getBooksByTestament
-func getBooksByTestament(svc *bible.Service) http.HandlerFunc {
+func getBooksByTestament(svc bible.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// json.NewEncoder(w).Encode()
 	}
 }
 
 // getChapterByBook
-func getChapterByBook(svc *bible.Service) http.HandlerFunc {
+func getChapterByBook(svc bible.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		// json.NewEncoder(w).Encode()
@@ -25,7 +25,7 @@ func getChapterByBook(svc *bible.Service) http.HandlerFunc {
 }
 
 // getVersesByChapte
-func getVersesByChapter(svc *bible.Service) http.HandlerFunc {
+func getVersesByChapter(svc bible.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		book := chi.URLParam(r, urlParamBook)
 		if book == "" {
@@ -44,7 +44,7 @@ func getVersesByChapter(svc *bible.Service) http.HandlerFunc {
 }
 
 // getVerse
-func getVerse(svc *bible.Service) http.HandlerFunc {
+func getVerse(svc bible.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		book := chi.URLParam(r, urlParamBook)
 		if book == "" {
