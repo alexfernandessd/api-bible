@@ -18,7 +18,9 @@ func main() {
 		log.Fatal("fail to connect with instance rds", dbErr)
 	}
 
-	service := bible.NewService(dbConn)
+	repository := bible.NewRepository(dbConn)
+	service := bible.NewService(repository)
+
 	handler := createServerHandler(service)
 
 	fmt.Printf("Starting %s on port %d ...", config.APP, config.Port)

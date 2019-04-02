@@ -6,19 +6,26 @@ import (
 	"log"
 )
 
-// Database map methods from database
-type Database interface {
+// Repository map methods from repository.
+type Repository interface {
 	getVerse(bookID, chapterID, verseID string, verse *Verse) error
 	getVerses(bookID, chapterID string, verses *[]Verse) error
 }
 
-// MySQLDatabase contains a conection with SQL
-type MySQLDatabase struct {
+// RepositoryImpl respository implementation.
+type RepositoryImpl struct {
 	db *sql.DB
 }
 
-// NewConnectionMySQL create a connection with a rds
-func NewConnectionMySQL(config *Config) (*MySQLDatabase, error) {
+// NewRepository is the repository constructor.
+func NewRepository(db *sql.DB) *RepositoryImpl {
+	return &RepositoryImpl{
+		db: db,
+	}
+}
+
+// NewConnectionMySQL create a connection with a rds.
+func NewConnectionMySQL(config *Config) (*sql.DB, error) {
 	// Connection with AWS
 	dnsStr := fmt.Sprintf("%s:%s@tcp(%s)/%s?tls=false",
 		config.AWSUser, config.AWSPassword, config.MySqlbEndpoint, config.AWSInstance,
@@ -30,13 +37,13 @@ func NewConnectionMySQL(config *Config) (*MySQLDatabase, error) {
 		log.Fatal("failed to connect on database: ", connErr)
 	}
 
-	return &MySQLDatabase{db: dbConn}, err
+	return dbConn, err
 }
 
-func (m MySQLDatabase) getVerse(book, chapterID, verseID string, verse *Verse) error {
-	bookID, err := m.getBookByID(book)
+func (r RepositoryImpl) getVerse(book, chapterID, verseID string, verse *Verse) error {
+	bookID, err := r.getBookByID(book)
 
-	rows, err := m.db.Query("SELECT * FROM verses where book = ? and chapter = ? and verse = ?", bookID, chapterID, verseID)
+	rows, err := r.db.Query("SELECT * FROM verses where book = ? and chapter = ? and verse = ?", bookID, chapterID, verseID)
 	if err != nil {
 		fmt.Println("error: ", err)
 		return err
@@ -52,10 +59,10 @@ func (m MySQLDatabase) getVerse(book, chapterID, verseID string, verse *Verse) e
 	return err
 }
 
-func (m MySQLDatabase) getVerses(book, chapterID string, verses *[]Verse) error {
-	bookID, err := m.getBookByID(book)
+func (r RepositoryImpl) getVerses(book, chapterID string, verses *[]Verse) error {
+	bookID, err := r.getBookByID(book)
 
-	rows, err := m.db.Query("SELECT * FROM verses where book = ? and chapter = ?", bookID, chapterID)
+	rows, err := r.db.Query("SELECT * FROM verses where book = ? and chapter = ?", bookID, chapterID)
 	if err != nil {
 		fmt.Println("error: ", err)
 		return err
@@ -84,8 +91,8 @@ func (m MySQLDatabase) getVerses(book, chapterID string, verses *[]Verse) error 
 	return nil
 }
 
-func (m MySQLDatabase) getBookByID(book string) (int, error) {
-	rows, err := m.db.Query("SELECT id FROM books where name = ?", book)
+func (r RepositoryImpl) getBookByID(book string) (int, error) {
+	rows, err := r.db.Query("SELECT id FROM books where name = ?", book)
 	var bookID int
 
 	for rows.Next() {
