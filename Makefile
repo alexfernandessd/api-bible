@@ -14,6 +14,8 @@ BUILDARCH ?= amd64
 ECHOFLAGS ?=
 ROOT_DIR := $(realpath .)
 
+PKGS = $(shell $(GO) list ./...)
+
 ENVFLAGS ?= CGO_ENABLED=0
 BUILDENV ?= GOOS=$(BUILDOS) GOARCH=$(BUILDARCH)
 
@@ -21,6 +23,11 @@ BIN_WEBSERVER := api-bible
 
 CREATE_LOCAL_ENV := $(shell if [ ! -f "$(ROOT_DIR)/.env" ]; then cp $(ROOT_DIR)/.env.example $(ROOT_DIR)/.env; fi)
 LOCAL_VARIABLES ?= $(shell for i in $(shell cat $(ROOT_DIR)/.env); do echo -n "$$i "; done)
+
+## test: run unit tests
+test:
+	@echo $(ECHOFLAGS) "$(OK_COLOR)==> Running tests with envs:[$(LOCAL_VARIABLES)]...$(NO_COLOR)"
+	@$(LOCAL_VARIABLES) $(ENVFLAGS) $(GO) test $(GOFLAGS) $(PKGS)
 
 ## build-run
 build-run: build run

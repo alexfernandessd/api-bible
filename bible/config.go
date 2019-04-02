@@ -8,15 +8,16 @@ import (
 
 // Config map somes variables defaults from application
 type Config struct {
-	APP  string `envconfig:"APP_NAME" default:"bible"`
+	APP  string `envconfig:"APP_NAME" default:"api-bible"`
 	Port int    `envconfig:"APP_PORT" default:"8083"`
 
-	AWSRegion   string `envconfig:"BIBLE_AWS_REGION" default:"us-east-2"`
-	AWSInstance string `envconfig:"BIBLE_AWS_INSTANCE"`
-	AWSUser     string `envconfig:"BIBLE_AWS_DB_USER" default:"bible"`
-	AWSPassword string `envconfig:"BIBLE_AWS_DB_PASSWORD"`
+	DBRegion         string `envconfig:"DB_REGION" default:"us-east-1"`
+	DBInstance       string `envconfig:"DB_INSTANCE"`
+	DBUser           string `envconfig:"DB_USER"`
+	DBPassword       string `envconfig:"DB_PASSWORD"`
+	ConnectionString string `envconfig:"DB_CONNECTION_STRING" default:"%s:%s@tcp(%s)/%s?tls=false"`
 
-	MySqlbEndpoint string `envconfig:"BIBLE_AWS_DB_ENDPOINT"`
+	DBEndpoint string `envconfig:"DB_ENDPOINT"`
 }
 
 //NewConfig config constructor

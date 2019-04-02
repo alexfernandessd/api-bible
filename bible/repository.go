@@ -25,11 +25,12 @@ func NewRepository(db *sql.DB) *RepositoryImpl {
 }
 
 // NewConnectionMySQL create a connection with a rds.
-func NewConnectionMySQL(config *Config) (*sql.DB, error) {
+func NewConnectionMySQL(dbUser, dbPassword, dbEndPoint, dbInstance, connectionString string) (*sql.DB, error) {
 	// Connection with AWS
-	dnsStr := fmt.Sprintf("%s:%s@tcp(%s)/%s?tls=false",
-		config.AWSUser, config.AWSPassword, config.MySqlbEndpoint, config.AWSInstance,
+	dnsStr := fmt.Sprintf(connectionString,
+		dbUser, dbPassword, dbEndPoint, dbInstance,
 	)
+
 	dbConn, err := sql.Open("mysql", dnsStr)
 
 	connErr := dbConn.Ping()

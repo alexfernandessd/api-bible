@@ -14,7 +14,7 @@ const (
 	urlParamVerseID     = "verseID"
 )
 
-func createServerHandler(service *bible.Service) http.Handler {
+func createServerHandler(service bible.Service) http.Handler {
 	router := chi.NewRouter()
 
 	// router.Get("/version", versionHandler)
