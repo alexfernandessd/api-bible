@@ -13,7 +13,13 @@ import (
 func main() {
 	config := bible.NewConfig()
 
-	dbConn, dbErr := bible.NewConnectionMySQL(config)
+	dbConn, dbErr := bible.NewConnectionMySQL(
+		config.DBUser,
+		config.DBPassword,
+		config.DBEndpoint,
+		config.DBInstance,
+		config.ConnectionString,
+	)
 	if dbErr != nil {
 		log.Fatal("fail to connect with instance rds", dbErr)
 	}
