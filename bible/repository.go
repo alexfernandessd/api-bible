@@ -5,6 +5,11 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"time"
+)
+
+const (
+	dbDriver string = "mysql"
 )
 
 // Repository map methods from repository.
@@ -25,42 +30,38 @@ func NewRepository(db *sql.DB) *RepositoryImpl {
 	}
 }
 
-// NewConnectionMySQL create a connection with a rds.
+// NewConnectionMySQL create a connection with a MySQL.
 func NewConnectionMySQL(dbUser, dbPassword, dbEndPoint, dbInstance, connectionString string) (*sql.DB, error) {
-	// Connection with AWS
 	dnsStr := fmt.Sprintf(connectionString,
 		dbUser, dbPassword, dbEndPoint, dbInstance,
 	)
 
-	dbConn, err := sql.Open("mysql", dnsStr)
+	dbConn, err := sql.Open(dbDriver, dnsStr)
 
 	connErr := dbConn.Ping()
 	if connErr != nil {
 		log.Fatal("failed to connect on database: ", connErr)
+		return nil, connErr
 	}
 
 	return dbConn, err
 }
 
 func (r RepositoryImpl) getVerse(book, chapterID, verseID string, verse *Verse) error {
+	start := time.Now()
+
 	bookID, err := r.getBookByID(book)
 	if err != nil {
 		return err
 	}
 
-	rows, err := r.db.Query("SELECT version, text FROM verses where book = ? and chapter = ? and verse = ? LIMIT 1", *bookID, chapterID, verseID)
-	if err != nil {
-		fmt.Println("error on execute query: ", err)
-		return err
-	}
+	row := r.db.QueryRow("SELECT version, text FROM verses where book = ? and chapter = ? and verse = ? LIMIT 1", *bookID, chapterID, verseID)
 
-	if !rows.Next() {
-		return errors.New("chapter or verse not found")
-	}
+	fmt.Println("execution time of 2 querys: ", time.Since(start))
 
-	err = rows.Scan(&verse.Version, &verse.Text)
+	err = row.Scan(&verse.Version, &verse.Text)
 	if err != nil {
-		fmt.Println("error on scan rows: ", err)
+		fmt.Println("error on scan row: ", err)
 		return err
 	}
 
@@ -100,17 +101,16 @@ func (r RepositoryImpl) getVerses(book, chapterID string, verses *[]Verse) error
 }
 
 func (r RepositoryImpl) getBookByID(book string) (*int, error) {
-	rows, err := r.db.Query("SELECT id FROM books WHERE name = ? LIMIT 1", book)
-	if err != nil {
-		return nil, err
-	}
+	row := r.db.QueryRow("SELECT id FROM books WHERE name = ? LIMIT 1", book)
 
-	if !rows.Next() {
+	var bookID int
+	err := row.Scan(&bookID)
+
+	if err != nil && bookID == 0 {
+		// TODO: Personal error
 		return nil, errors.New("book not found")
 	}
 
-	var bookID int
-	err = rows.Scan(&bookID)
 	if err != nil {
 		return nil, err
 	}

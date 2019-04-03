@@ -21,7 +21,7 @@ func main() {
 		config.ConnectionString,
 	)
 	if dbErr != nil {
-		log.Fatal("fail to connect with instance rds", dbErr)
+		log.Fatal("fail to connect with instance mysql", dbErr)
 	}
 
 	repository := bible.NewRepository(dbConn)
