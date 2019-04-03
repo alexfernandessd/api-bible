@@ -29,9 +29,6 @@ test:
 	@echo $(ECHOFLAGS) "$(OK_COLOR)==> Running tests with envs:[$(LOCAL_VARIABLES)]...$(NO_COLOR)"
 	@$(LOCAL_VARIABLES) $(ENVFLAGS) $(GO) test $(GOFLAGS) $(PKGS)
 
-## build-run
-build-run: build run
-
 ## run: run
 run:
 	@echo $(ECHOFLAGS) "$(OK_COLOR)==> Running webserver with envs:[$(LOCAL_VARIABLES)]...$(NO_COLOR)"

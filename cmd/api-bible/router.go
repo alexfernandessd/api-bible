@@ -25,7 +25,7 @@ func createServerHandler(service bible.Service) http.Handler {
 
 	router.Route("/book", func(router chi.Router) {
 		router.Get("/{book}", getChapterByBook(service))
-		router.Get("/{book}/chapter/{chapterID}", getVersesByChapter(service))
+		router.Get("/{book}/chapter/{chapterID}/verses", getVersesByChapter(service))
 		router.Get("/{book}/chapter/{chapterID}/verse/{verseID}", getVerse(service))
 	})
 
