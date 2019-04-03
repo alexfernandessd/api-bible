@@ -17,16 +17,18 @@ const (
 func createServerHandler(service bible.Service) http.Handler {
 	router := chi.NewRouter()
 
-	// router.Get("/version", versionHandler)
+	router.Get("/version", versionHandler())
 
-	router.Route("/testament", func(router chi.Router) {
-		router.Get("/{testamentID}", getBooksByTestament(service))
-	})
+	router.Get("/testaments/{testament}/books", getBooksByTestament(service))
 
-	router.Route("/book", func(router chi.Router) {
-		router.Get("/{book}", getChapterByBook(service))
-		router.Get("/{book}/chapter/{chapterID}/verses", getVersesByChapter(service))
-		router.Get("/{book}/chapter/{chapterID}/verse/{verseID}", getVerse(service))
+	router.Route("/books/{book}", func(router chi.Router) {
+		router.Get("/verses", getVersesByBook(service))
+		router.Route("/chapters", func(router chi.Router) {
+			router.Route("/{chapterID}", func(router chi.Router) {
+				router.Get("/verses", getVersesByChapter(service))
+				router.Get("/verses/{verseID}", getVerse(service))
+			})
+		})
 	})
 
 	return router

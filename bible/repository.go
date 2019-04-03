@@ -2,6 +2,7 @@ package bible
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"log"
 )
@@ -43,21 +44,29 @@ func NewConnectionMySQL(dbUser, dbPassword, dbEndPoint, dbInstance, connectionSt
 
 func (r RepositoryImpl) getVerse(book, chapterID, verseID string, verse *Verse) error {
 	bookID, err := r.getBookByID(book)
-
-	rows, err := r.db.Query("SELECT * FROM verses where book = ? and chapter = ? and verse = ?", bookID, chapterID, verseID)
 	if err != nil {
-		fmt.Println("error: ", err)
 		return err
 	}
 
-	for rows.Next() {
-		err = rows.Scan(&verse.ID, &verse.Version, &verse.Testament, &verse.Book, &verse.Chapter, &verse.Verse, &verse.Text)
-	}
+	rows, err := r.db.Query("SELECT version, text FROM verses where book = ? and chapter = ? and verse = ?", bookID, chapterID, verseID)
 	if err != nil {
-		fmt.Println("error: ", err)
+		fmt.Println("error on execute query: ", err)
+		return err
 	}
 
-	return err
+	if !rows.Next() {
+		return errors.New("chapter or verse not found")
+	}
+
+	for rows.Next() {
+		err = rows.Scan(&verse.Version, &verse.Text)
+	}
+	if err != nil {
+		fmt.Println("error on scan rows: ", err)
+		return err
+	}
+
+	return nil
 }
 
 func (r RepositoryImpl) getVerses(book, chapterID string, verses *[]Verse) error {
@@ -95,6 +104,10 @@ func (r RepositoryImpl) getVerses(book, chapterID string, verses *[]Verse) error
 func (r RepositoryImpl) getBookByID(book string) (int, error) {
 	rows, err := r.db.Query("SELECT id FROM books where name = ?", book)
 	var bookID int
+
+	if !rows.Next() {
+		return bookID, errors.New("book not found")
+	}
 
 	for rows.Next() {
 		var id int

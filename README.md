@@ -17,7 +17,7 @@ make run
 
 ## URLs for services
 
-### Get /testament/{testament}
+### Get /testaments/{testament}/books
 
 You can pass `old` or `new` on url param.
 
@@ -31,7 +31,7 @@ You can pass `old` or `new` on url param.
 }
 ```
 
-### Get /book/{book}
+### Get /books/{book}/verses
 
 You only need pass the book name on url param.
 
@@ -40,7 +40,7 @@ You only need pass the book name on url param.
 {}
 ```
 
-### Get /book/{book}/chapter/{chapter}/verses
+### Get /books/{book}/chapters/{chapter}/verses
 
 You need pass the book name and the chapter on url param.
 
@@ -71,7 +71,7 @@ You need pass the book name and the chapter on url param.
 }
 ```
 
-### Get /book/{book}/chapter/{chapter}/verse/{verse}
+### Get /books/{book}/chapters/{chapter}/verses/{verse}
 
 You need pass the book name, chapter and the verse on url param.
 
