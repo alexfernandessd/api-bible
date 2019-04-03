@@ -48,7 +48,7 @@ func (r RepositoryImpl) getVerse(book, chapterID, verseID string, verse *Verse) 
 		return err
 	}
 
-	rows, err := r.db.Query("SELECT version, text FROM verses where book = ? and chapter = ? and verse = ?", bookID, chapterID, verseID)
+	rows, err := r.db.Query("SELECT version, text FROM verses where book = ? and chapter = ? and verse = ? LIMIT 1", *bookID, chapterID, verseID)
 	if err != nil {
 		fmt.Println("error on execute query: ", err)
 		return err
@@ -58,9 +58,7 @@ func (r RepositoryImpl) getVerse(book, chapterID, verseID string, verse *Verse) 
 		return errors.New("chapter or verse not found")
 	}
 
-	for rows.Next() {
-		err = rows.Scan(&verse.Version, &verse.Text)
-	}
+	err = rows.Scan(&verse.Version, &verse.Text)
 	if err != nil {
 		fmt.Println("error on scan rows: ", err)
 		return err
@@ -72,7 +70,7 @@ func (r RepositoryImpl) getVerse(book, chapterID, verseID string, verse *Verse) 
 func (r RepositoryImpl) getVerses(book, chapterID string, verses *[]Verse) error {
 	bookID, err := r.getBookByID(book)
 
-	rows, err := r.db.Query("SELECT * FROM verses where book = ? and chapter = ?", bookID, chapterID)
+	rows, err := r.db.Query("SELECT * FROM verses where book = ? and chapter = ?", *bookID, chapterID)
 	if err != nil {
 		fmt.Println("error: ", err)
 		return err
@@ -101,21 +99,21 @@ func (r RepositoryImpl) getVerses(book, chapterID string, verses *[]Verse) error
 	return nil
 }
 
-func (r RepositoryImpl) getBookByID(book string) (int, error) {
-	rows, err := r.db.Query("SELECT id FROM books where name = ?", book)
-	var bookID int
+func (r RepositoryImpl) getBookByID(book string) (*int, error) {
+	rows, err := r.db.Query("SELECT id FROM books WHERE name = ? LIMIT 1", book)
+	if err != nil {
+		return nil, err
+	}
 
 	if !rows.Next() {
-		return bookID, errors.New("book not found")
+		return nil, errors.New("book not found")
 	}
 
-	for rows.Next() {
-		var id int
-		err = rows.Scan(&id)
-
-		if err == nil {
-			bookID = id - 1
-		}
+	var bookID int
+	err = rows.Scan(&bookID)
+	if err != nil {
+		return nil, err
 	}
-	return bookID, err
+
+	return &bookID, nil
 }

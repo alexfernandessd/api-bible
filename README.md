@@ -78,12 +78,7 @@ You need pass the book name, chapter and the verse on url param.
 - Response 200:
 ```js
 {
-  "ID": 1,
   "Version": "aa",
-  "Testament": 1,
-  "Book": 0,
-  "Chapter": 1,
-  "Verse": 1,
   "Text": "No princípio criou Deus os céus e a terra."
 }
 ```

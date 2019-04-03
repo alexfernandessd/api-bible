@@ -22,7 +22,7 @@ BUILDENV ?= GOOS=$(BUILDOS) GOARCH=$(BUILDARCH)
 BIN_WEBSERVER := api-bible
 
 CREATE_LOCAL_ENV := $(shell if [ ! -f "$(ROOT_DIR)/.env" ]; then cp $(ROOT_DIR)/.env.example $(ROOT_DIR)/.env; fi)
-LOCAL_VARIABLES ?= $(shell for i in $(shell cat $(ROOT_DIR)/.env); do echo -n "$$i "; done)
+LOCAL_VARIABLES ?= $(shell while read -r line; do printf "$$line" | sed 's/ /\\ /g' | awk '{print}'; done < $(ROOT_DIR)/.env)
 
 ## test: run unit tests
 test:
