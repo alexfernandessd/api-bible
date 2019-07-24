@@ -4,6 +4,7 @@ package bible
 type Service interface {
 	GetVerse(book, chapterID, verseID string) (Verse, error)
 	GetVerses(book, chapterID string) ([]Verse, error)
+	GetRandomVerse() (Verse, error)
 }
 
 // ServiceImpl map requirements.
@@ -14,6 +15,13 @@ type ServiceImpl struct {
 // NewService returns a service layer
 func NewService(r Repository) *ServiceImpl {
 	return &ServiceImpl{repository: r}
+}
+
+// GetRandomVerse ...
+func (s ServiceImpl) GetRandomVerse() (Verse, error) {
+	var verse Verse
+	err := s.repository.getRandomVerse(&verse)
+	return verse, err
 }
 
 // GetVerse get one verse by book, chapter and verse

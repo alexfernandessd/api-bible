@@ -30,6 +30,13 @@ func getVersesByBook(svc bible.Service) http.HandlerFunc {
 	}
 }
 
+func getRandomVerse(svc bible.Service) http.HandlerFunc {
+	return func(w http.ResponseWriter, t *http.Request) {
+		verse, _ := svc.GetRandomVerse()
+		json.NewEncoder(w).Encode(verse)
+	}
+}
+
 func getVersesByChapter(svc bible.Service) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		book := chi.URLParam(r, urlParamBook)

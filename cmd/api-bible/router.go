@@ -19,7 +19,7 @@ func createServerHandler(service bible.Service) http.Handler {
 
 	router.Get("/version", versionHandler())
 
-	router.Get("/testaments/{testament}/books", getBooksByTestament(service))
+	router.Get("/random-verse", getRandomVerse(service))
 
 	router.Route("/books/{book}", func(router chi.Router) {
 		router.Get("/verses", getVersesByBook(service))

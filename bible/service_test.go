@@ -52,8 +52,13 @@ func TestService_GetVerse(t *testing.T) {
 }
 
 type repositoryMock struct {
-	getVerseStub  func(bookID, chapterID, verseID string, verse *Verse) error
-	getVersesStub func(bookID, chapterID string, verses *[]Verse) error
+	getVerseStub       func(bookID, chapterID, verseID string, verse *Verse) error
+	getVersesStub      func(bookID, chapterID string, verses *[]Verse) error
+	getRandomVerseStub func(verse *Verse) error
+}
+
+func (r *repositoryMock) getRandomVerse(verse *Verse) error {
+	return r.getRandomVerseStub(verse)
 }
 
 func (r *repositoryMock) getVerse(bookID, chapterID, verseID string, verse *Verse) error {

@@ -16,6 +16,7 @@ const (
 type Repository interface {
 	getVerse(bookID, chapterID, verseID string, verse *Verse) error
 	getVerses(bookID, chapterID string, verses *[]Verse) error
+	getRandomVerse(verse *Verse) error
 }
 
 // RepositoryImpl respository implementation.
@@ -45,6 +46,21 @@ func NewConnectionMySQL(dbUser, dbPassword, dbEndPoint, dbInstance, connectionSt
 	}
 
 	return dbConn, err
+}
+
+func (r RepositoryImpl) getRandomVerse(verse *Verse) error {
+	row := r.db.QueryRow("SELECT * FROM verses ORDER BY RAND() LIMIT 1")
+	err := row.Scan(
+		&verse.ID,
+		&verse.Version,
+		&verse.Testament,
+		&verse.Book,
+		&verse.Chapter,
+		&verse.Verse,
+		&verse.Text,
+	)
+
+	return err
 }
 
 func (r RepositoryImpl) getVerse(book, chapterID, verseID string, verse *Verse) error {
